@@ -33,6 +33,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>BAG Awards</title>
+</svelte:head>
+
 <h1>BAG Awards</h1>
 
 {#if years.length > 0}

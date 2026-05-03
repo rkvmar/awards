@@ -50,7 +50,8 @@ export const load: PageServerLoad = async ({ url }) => {
 		const info = {
 			key: eventKey,
 			name: event?.name ?? eventKey,
-			week: typeof event?.week === 'number' ? event.week : null
+			week: typeof event?.week === 'number' ? event.week : null,
+			event_type_string: event?.event_type_string ?? null
 		};
 
 		eventCache.set(eventKey, info);
@@ -125,6 +126,7 @@ export const load: PageServerLoad = async ({ url }) => {
 					recipient_list: award.recipient_list ?? [],
 					week,
 					event_name: eventInfo?.name ?? null,
+					event_type_string: eventInfo?.event_type_string ?? null,
 					team_key,
 					team_number: teamNumber
 				};

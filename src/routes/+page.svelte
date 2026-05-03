@@ -10,19 +10,32 @@
 
 		for (const award of awards) {
 			const weekNumber = typeof award.week === 'number' ? award.week + 1 : null;
-			const key = weekNumber ?? 'unknown';
+			const isChampionship =
+				typeof award.event_type_string === 'string' &&
+				award.event_type_string.toLowerCase().includes('championship');
+			const label = weekNumber
+				? `Week ${weekNumber}`
+				: isChampionship
+					? 'Championship'
+					: 'Week Unknown';
+			const key = label;
 
 			if (!groups.has(key)) {
-				groups.set(key, { weekNumber, awards: [] });
+				groups.set(key, { weekNumber, label, awards: [] });
 			}
 
 			groups.get(key).awards.push(award);
 		}
 
 		return Array.from(groups.values()).sort((a, b) => {
+			if (a.label === 'Championship' && b.label !== 'Championship') return -1;
+			if (b.label === 'Championship' && a.label !== 'Championship') return 1;
 			const aWeek = a.weekNumber ?? -1;
 			const bWeek = b.weekNumber ?? -1;
-			return bWeek - aWeek;
+			if (aWeek !== bWeek) return bWeek - aWeek;
+			if (a.label === 'Week Unknown' && b.label !== 'Week Unknown') return 1;
+			if (b.label === 'Week Unknown' && a.label !== 'Week Unknown') return -1;
+			return a.label.localeCompare(b.label);
 		});
 	};
 
@@ -58,11 +71,7 @@
 	{:else}
 		{@const groupedAwards = groupAwards(awardsData)}
 		{#each groupedAwards as group}
-			{#if group.weekNumber !== null}
-				<h2>Week {group.weekNumber}</h2>
-			{:else}
-				<h2>Week Unknown</h2>
-			{/if}
+			<h2>{group.label}</h2>
 			<table>
 				<thead>
 					<tr>
